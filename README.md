@@ -67,7 +67,7 @@ Add the dependency to your Maven project:
 <dependency>
     <groupId>com.bentzn.util</groupId>
     <artifactId>linestruct-parser</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.21</version>
 </dependency>
 ```
 
