@@ -276,7 +276,7 @@ public class LineStructParser {
         try {
             // Read from classpath resource
             InputStream inputStream = LineStructParser.class.getClassLoader()
-                    .getResourceAsStream("linestruct_description.txt");
+                    .getResourceAsStream("linestruct_description_for_LLM.txt");
 
             if (inputStream == null) {
                 throw new RuntimeException("Could not find linestruct_description.txt in classpath");
