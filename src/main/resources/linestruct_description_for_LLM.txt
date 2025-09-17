@@ -1,0 +1,66 @@
+LineStruct Format Specification:
+
+A custom UTF-8 data format with the following structure:
+
+Character Definitions:
+- Field delimiter: ¦ (U+00A6)
+- Nested object start: ‹ (U+2039)
+- Nested object end: › (U+203A)
+- Array start: « (U+00AB)
+- Array end: » (U+00BB)
+- Enum delimiter: | (U+007C)
+- Escape character: ⁊ (U+204A)
+
+Format Structure:
+Line 1: EntityName:<name>
+Line 2: schema:<field definitions>
+Lines 3+: Data rows
+
+Schema Definition:
+- Primitive types: 
+	string
+	int
+	float: Uses "." as decimal separator (e.g., 3.14)
+	bool: "true" or "false" (lowercase)
+	date: ISO 8601 format (YYYY-MM-DD)
+	datetime: ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ) in UTC
+- Arrays: «type»
+- Objects: ‹field:type¦field:type¦...›
+- Enums: {value|value|...}
+- Optional fields: <type>?
+- Field descriptions: field:type@desc="description"
+
+Data Format: 
+- Fields separated by ¦
+- Arrays: «value¦value¦...»
+- Objects: ‹value¦value¦...›
+- Enums: single value from defined set
+- Optional fields: value or empty
+
+Nested structures:
+Parsing is recursive: Nested arrays/objects follow the same delimiter rules inside their start/end markers.
+Order: Fields in objects/arrays match the schema order; no ambiguity as delimiters (¦ for fields, | for enums) are distinct from nesting markers.
+Example for array of objects: schema: contacts:«‹name:string¦phone:string›»
+Data: «‹Alice¦123›¦‹Bob¦456›» (array with two objects) or «» (empty array)
+
+Field handling in nested objects:
+- All fields defined in the schema must be represented positionally, even if null/empty
+- Example: For schema ‹name:string¦age:int›, data ‹Bob¦› means name="Bob", age=null
+- The delimiter structure must be preserved to maintain field positions
+- This differs from top-level optional fields which can be omitted at the end of a row
+
+Escape Sequences:- ⁊¦ for literal ¦
+- ⁊‹ for literal ‹
+- ⁊› for literal ›
+- ⁊« for literal «
+- ⁊» for literal »
+- ⁊| for literal |
+
+Null for optional objects/arrays: Represented by empty field (no start/end markers, just ¦ delimiter separation). E.g., for schema field ‹subfield:type›?, data uses ¦ (empty) for null, or ‹value› for present.
+No trailing ¦ on rows; e.g., if last field empty optional, row ends without ¦.
+
+Example:
+EntityName:Person
+schema:id:int¦name:string¦age:int¦active:bool
+1¦John Doe¦30¦true
+2¦Jane Smith¦25¦false
