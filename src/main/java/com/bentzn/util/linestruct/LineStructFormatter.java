@@ -4,14 +4,14 @@ package com.bentzn.util.linestruct;
  * Utility class for formatting LineStruct schema strings between compact single-line
  * and pretty-printed multi-line representations.
  * 
- * <p>LineStruct use special Unicode characters as delimiters:
+ * <p>LineStruct uses special Unicode characters as delimiters:
  * <ul>
  * <li>{@code ¦} (U+00A6) - Field delimiter</li>
  * <li>{@code ‹} (U+2039) - Object start marker</li>
  * <li>{@code ›} (U+203A) - Object end marker</li>
  * <li>{@code «} (U+00AB) - Array start marker</li>
  * <li>{@code »} (U+00BB) - Array end marker</li>
- * <li>{@code Š} (U+0160) - Escape character</li>
+ * <li>{@code ⁊} (U+204A) - Escape character</li>
  * <li>{@code {}} - Enum delimiters</li>
  * </ul>
  * 
@@ -20,57 +20,28 @@ package com.bentzn.util.linestruct;
  * (suitable for display or editing).
  * 
  * @author bentzn/Grok/Claude
+ * @generated 2025-09-17T14:24:00Z
  */
 class LineStructFormatter {
 
     /**
-     * Pretty prints a LineStruct schema string using default indentation.
+     * Pretty prints a LineStruct schema string
      * 
-     * <p>This is a convenience method that calls {@link #prettyPrintSchema(String, int)}
-     * with a default indent size of 2 spaces per level.
-     * 
-     * <p>Example:
-     * <pre>
-     * Input:  "schema:name:string¦age:int‹address:string¦city:string›"
-     * Output: "schema:
-     *           name:string
-     *           age:int
-     *           ‹
-     *             address:string
-     *             city:string
-     *           ›"
-     * </pre>
-     * 
-     * @param schema The single-line schema string to format. May optionally start with "schema:"
-     * @return The pretty-printed schema with proper indentation and line breaks
-     * @throws NullPointerException if schema is null
-     * @see #prettyPrintSchema(String, int)
+     * @param schemaString The single-line schema string
+     * @return The pretty-printed schema
      */
     static String prettyPrintSchema(String schema) {
         return prettyPrintSchema(schema, 2);
     }
 
+
+
     /**
-     * Pretty prints a LineStruct schema string with custom indentation.
+     * Pretty prints a LineStruct schema string
      * 
-     * <p>Converts a compact single-line schema into a multi-line format with proper
-     * indentation to show the hierarchical structure of objects and arrays. The method
-     * handles:
-     * <ul>
-     * <li>Field separation and proper line breaks</li>
-     * <li>Nested object and array indentation</li>
-     * <li>Enum preservation (content within {} is kept intact)</li>
-     * <li>Escape sequence handling</li>
-     * </ul>
-     * 
-     * <p>The "schema:" prefix is automatically added to the output if not present in input.
-     * 
-     * @param schemaString The single-line schema string to format. May optionally start with "schema:"
-     * @param indentSize Number of spaces to use for each level of indentation. Must be >= 0
-     * @return The pretty-printed schema with the specified indentation
-     * @throws NullPointerException if schemaString is null
-     * @throws IllegalArgumentException if indentSize is negative
-     * @see #compactSchema(String)
+     * @param schemaString The single-line schema string
+     * @param indentSize Number of spaces per indent level
+     * @return The pretty-printed schema
      */
     static String prettyPrintSchema(String schemaString, int indentSize) {
         // Remove "schema:" prefix if present
@@ -87,7 +58,7 @@ class LineStructFormatter {
             char ch = content.charAt(i);
 
             // Handle escape sequences
-            if (ch == 'Š' && !escaped) {
+            if (ch == '⁊' && !escaped) {
                 escaped = true;
                 currentField.append(ch);
                 i++;
@@ -200,39 +171,13 @@ class LineStructFormatter {
         return result.toString();
     }
 
+
+
     /**
-     * Compacts a pretty-printed schema back to a single line format.
+     * Compacts a pretty-printed schema back to single line
      * 
-     * <p>This method performs the inverse operation of {@link #prettyPrintSchema(String, int)},
-     * converting a multi-line indented schema back to a compact single-line representation.
-     * The process involves:
-     * <ul>
-     * <li>Removing all whitespace and line breaks</li>
-     * <li>Inserting appropriate field delimiters (¦) between schema elements</li>
-     * <li>Preserving structural markers for objects and arrays</li>
-     * <li>Maintaining proper delimiter placement around opening/closing markers</li>
-     * </ul>
-     * 
-     * <p>Empty lines and pure whitespace lines are ignored during processing.
-     * The output always includes the "schema:" prefix.
-     * 
-     * <p>Example:
-     * <pre>
-     * Input:  "schema:
-     *           name:string
-     *           age:int
-     *           ‹
-     *             address:string
-     *             city:string
-     *           ›"
-     * Output: "schema:name:string¦age:int¦‹address:string¦city:string›"
-     * </pre>
-     * 
-     * @param prettySchema The pretty-printed (multi-line) schema to compact
-     * @return The single-line compact schema representation
-     * @throws NullPointerException if prettySchema is null
-     * @see #prettyPrintSchema(String)
-     * @see #prettyPrintSchema(String, int)
+     * @param prettySchema The pretty-printed schema
+     * @return The single-line schema
      */
     static String compactSchema(String prettySchema) {
         String[] lines = prettySchema.split("\n");
@@ -281,16 +226,10 @@ class LineStructFormatter {
         return result.toString();
     }
 
+
+
     /**
-     * Creates a string of spaces for indentation purposes.
-     * 
-     * <p>This is a utility method used internally by the formatting methods
-     * to generate consistent indentation strings.
-     * 
-     * @param level The indentation level (0 = no indentation, 1 = one level, etc.)
-     * @param size The number of spaces per indentation level
-     * @return A string containing {@code level * size} space characters
-     * @throws IllegalArgumentException if level or size is negative
+     * Helper method to create indentation
      */
     private static String indent(int level, int size) {
         StringBuilder sb = new StringBuilder();
@@ -299,4 +238,5 @@ class LineStructFormatter {
         }
         return sb.toString();
     }
+
 }
